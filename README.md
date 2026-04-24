@@ -4,6 +4,8 @@ Code repository for: **Conformal prediction sets on frozen foundation-model embe
 
 Hayden Farquhar MBBS MPHTM
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19718656.svg)](https://doi.org/10.5281/zenodo.19718656)
+
 Preprint: to be posted
 
 Pre-registration: [OSF doi.org/10.17605/OSF.IO/KBAMC](https://doi.org/10.17605/OSF.IO/KBAMC)
@@ -174,7 +176,7 @@ If you use this code, please cite:
 ```
 Farquhar H. Conformal prediction sets on frozen foundation-model embeddings
 for WHO-TPP-aligned tuberculosis chest X-ray triage: a multi-cohort derivation
-and external validation study. 2026.
+and external validation study. 2026. Code: https://doi.org/10.5281/zenodo.19718656
 ```
 
 ## License
