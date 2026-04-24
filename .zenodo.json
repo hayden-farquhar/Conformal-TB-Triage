@@ -1,0 +1,29 @@
+{
+  "title": "Conformal prediction sets on frozen foundation-model embeddings for WHO-TPP-aligned tuberculosis chest X-ray triage — Analysis Code",
+  "upload_type": "software",
+  "description": "Reproducibility code for: Conformal prediction sets on frozen foundation-model embeddings for WHO-TPP-aligned tuberculosis chest X-ray triage: a multi-cohort derivation and external validation study. Includes all analysis scripts, Colab notebooks for GPU-intensive steps, pre-computed results, and an interactive Streamlit demo.",
+  "creators": [
+    {
+      "name": "Farquhar, Hayden",
+      "orcid": "0009-0002-6226-440X"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "tuberculosis",
+    "chest X-ray",
+    "conformal prediction",
+    "foundation models",
+    "WHO target product profile",
+    "computer-aided detection",
+    "triage",
+    "reproducibility"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.17605/OSF.IO/KBAMC",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
+    }
+  ]
+}

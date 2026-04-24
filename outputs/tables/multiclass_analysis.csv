@@ -1,0 +1,5 @@
+label,n,mean_p_tb,pct_above_50
+active_tb,454,0.9139,0.9471
+healthy,2632,0.182,0.0938
+latent_tb,105,0.8202,0.8381
+sick_non_tb,2688,0.5815,0.6038

@@ -1,0 +1,8 @@
+model,architecture,params_M,embed_dim,weight_size_MB,embedding_file_MB,fits_4GB_RAM,fits_8GB_RAM
+rad_dino,ViT-B/16,86.6,768,346.0,92.3,Yes,Yes
+eva_x,ViT-B/16,86.6,768,346.0,92.3,Yes,Yes
+chexzero,ViT-B/32,151.3,512,605.0,61.6,Yes,Yes
+biomedclip,ViT-B/16,86.6,512,346.0,61.6,Yes,Yes
+gloria,ResNet-50,25.6,2048,102.0,245.5,Yes,Yes
+torchxrayvision,DenseNet-121,7.0,1024,28.0,122.2,Yes,Yes
+dinov2,ViT-B/14,86.6,768,346.0,92.1,Yes,Yes

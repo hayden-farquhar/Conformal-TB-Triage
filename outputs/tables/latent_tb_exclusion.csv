@@ -1,0 +1,4 @@
+definition,n_cal,n_test,n_tb_test,n_latent_test,auroc,tb_cov,singleton
+A (primary: active+latent=TB+),800,5879,559,105,0.9155,0.941,0.8532
+B (active only; latent excluded),800,5774,454,0,0.9287,0.9581,0.999
+C (active only; latent=TB-),800,5879,454,105,0.9229,0.9581,0.999

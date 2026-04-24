@@ -1,0 +1,9 @@
+cal_method,conformal,tb_cov,singleton,empty
+uncalibrated,APS,0.8623,0.6714,0.3286
+uncalibrated,Mondrian,0.8766,0.6578,0.3422
+temperature,APS,0.8623,0.6714,0.3286
+temperature,Mondrian,0.8766,0.6578,0.3422
+platt,APS,0.7835,0.8376,0.0
+platt,Mondrian,0.8766,0.6578,0.3422
+isotonic,APS,0.8122,0.8061,0.0
+isotonic,Mondrian,0.941,0.8532,0.1468

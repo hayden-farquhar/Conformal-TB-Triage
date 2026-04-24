@@ -1,0 +1,5 @@
+comparison,auroc_primary,auroc_other,delta,p_bootstrap,p_bh_corrected,significant_bh
+rad_dino vs rad_dino,0.9155,0.9155,0.0,1.0,1.0,False
+rad_dino vs biomedclip,0.9155,0.803,0.1125,0.0,0.0,True
+rad_dino vs torchxrayvision,0.9155,0.8613,0.0543,0.0,0.0,True
+rad_dino vs dinov2,0.9155,0.7553,0.1603,0.0,0.0,True

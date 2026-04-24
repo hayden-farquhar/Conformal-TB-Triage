@@ -1,0 +1,4 @@
+gamma,mean_coverage,mean_set_size,final_alpha,min_rolling_cov
+0.005,0.9939,1.4608,0.01,0.9381
+0.01,0.9939,1.4608,0.01,0.9381
+0.05,0.9939,1.4608,0.01,0.9381

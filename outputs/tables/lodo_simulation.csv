@@ -1,0 +1,5 @@
+held_out,n,n_tb,auroc,tb_cov
+shenzhen,662,336,0.8937,0.4702
+montgomery,138,58,0.8194,0.6552
+tbx11k,8399,799,0.841,0.8648
+pakistan,3008,2494,0.696,0.3292

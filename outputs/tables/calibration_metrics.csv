@@ -1,0 +1,5 @@
+method,ECE,MCE,Brier,T
+Uncalibrated,0.3375,0.7619,0.2314,
+Temperature,0.374,0.5616,0.2086,2.6582
+Platt,0.0059,0.0506,0.051,
+Isotonic,0.0113,0.6664,0.052,

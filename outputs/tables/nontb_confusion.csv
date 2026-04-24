@@ -1,0 +1,3 @@
+label,n_false_positive,n_total,fp_rate
+sick_non_tb,1323,2688,0.4921875
+healthy,162,2632,0.06155015197568389

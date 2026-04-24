@@ -1,0 +1,7 @@
+fusion,dims,split,auroc,auprc,cv_auroc,C,tb_cov,nontb_cov,singleton,mean_size
+rad_dino+biomedclip+txrv,2304,test,0.8373,0.4089,0.9532,10,0.9177,0.5348,1.0,1.0
+rad_dino+biomedclip+txrv,2304,ext_pakistan,0.939,0.9881,0.9532,10,0.9852,0.1401,1.0,1.0
+rad_dino+biomedclip,1280,test,0.8298,0.3957,0.9517,10,0.8909,0.5342,0.967,0.967
+rad_dino+biomedclip,1280,ext_pakistan,0.9514,0.9905,0.9517,10,0.9828,0.2335,0.9907,0.9907
+all4,3072,test,0.8296,0.3968,0.9508,10,0.9177,0.509,0.9991,0.9991
+all4,3072,ext_pakistan,0.9353,0.9873,0.9508,10,0.9868,0.1089,1.0,1.0

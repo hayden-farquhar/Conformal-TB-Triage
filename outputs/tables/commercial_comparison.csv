@@ -1,0 +1,11 @@
+system,sensitivity,specificity,source
+CAD4TB v6,0.93,0.69,Tavaziva 2022 IPD meta-analysis
+CAD4TB v7,0.95,0.76,Qin 2023
+qXR v3,0.92,0.73,"Qin 2019, Harris 2023"
+Lunit INSIGHT CXR,0.95,0.83,Nam 2022
+Expert radiologist (pooled),0.87,0.89,Tavaziva 2022 radiologist comparator
+Non-expert radiologist,0.77,0.72,Tavaziva 2022
+"This study (RAD-DINO, sens=0.9)",1.0,0.0,This study
+"This study (RAD-DINO, sens=0.93)",1.0,0.0,This study
+"This study (RAD-DINO, sens=0.95)",1.0,0.0,This study
+"This study (CRC, target FNR=0.05)",0.941,0.584,"This study, conformal-guaranteed"
