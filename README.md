@@ -1,20 +1,53 @@
 # Conformal TB Triage
 
-Code repository for: **Conformal prediction sets on frozen foundation-model embeddings for WHO-TPP-aligned tuberculosis chest X-ray triage: a multi-cohort derivation and external validation study**
+Code repository for: *Valid and recalibratable conformal prediction sets on frozen foundation-model embeddings for tuberculosis chest radiograph triage: a correction and evaluation study*
 
 Hayden Farquhar MBBS MPHTM
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19718656.svg)](https://doi.org/10.5281/zenodo.19718656)
 
-Preprint: to be posted
-
 Pre-registration: [OSF doi.org/10.17605/OSF.IO/KBAMC](https://doi.org/10.17605/OSF.IO/KBAMC)
+
+> **Correction note.** A split-provenance audit of an earlier version of this
+> pipeline found that the conformal nonconformity scores were computed on the
+> **same** split used to train the probe, violating the independence condition
+> that split-conformal coverage depends on. That in-sample design certifies a
+> *degenerate* predictor (94.1% TB-class coverage but only 47.5% marginal
+> coverage with 14.7% empty sets). The analysis here computes the conformal
+> calibration on a held-out development split; all results, figures, and
+> tables in this repository reflect that corrected design. Outputs carrying a
+> `corrected_` prefix are the authoritative versions.
+
+> **Corrected outputs are complete.** Every analysis has been recomputed under
+> the held-out design and is present here: discrimination, conformal coverage,
+> recalibration, the CPU sensitivity suite (label noise, seed/resplit stability,
+> meta-coverage, calibration-set size), and the four image-based GPU sensitivity
+> analyses (image-quality degradation, test-time augmentation, lung segmentation,
+> and prediction-set stability), produced via
+> `notebooks/03_gpu_sensitivity_analyses.ipynb`. Any non-`corrected_` image-
+> robustness output is retained only to document the superseded in-sample design
+> and should not be cited.
 
 ## Overview
 
-This repository contains all analysis code to reproduce the findings of the accompanying manuscript. The study evaluates whether frozen medical-imaging foundation-model embeddings combined with class-conditional conformal prediction can produce a TB chest X-ray triage rule that meets the WHO Target Product Profile (sensitivity ≥90%, specificity ≥70%) with formal statistical coverage guarantees.
+This repository contains the analysis code for a pre-registered evaluation of
+class-conditional conformal prediction for TB chest radiograph (CXR) triage on
+frozen foundation-model embeddings. Rather than a deployment claim, the study is
+a method-and-lesson contribution with three explicit findings: (1) a
+documented, reproducible conformal failure mode produced when the
+probe-training split is reused for calibration, and the diagnostic that detects
+it (decompose coverage by class *and* report empty- and singleton-set rates);
+(2) the recalibration economics of restoring coverage under geographic shift;
+and (3) a contamination control (DINOv2, natural-image pretraining) showing that
+validity is a property of the calibration design, not of CXR pretraining leakage.
 
-The pipeline extracts frozen embeddings from 4 foundation models (RAD-DINO, BiomedCLIP, torchxrayvision, DINOv2-B), trains lightweight probes, and applies conformal prediction methods (APS, RAPS, Mondrian, Conformal Risk Control, Learn Then Test) with comprehensive robustness evaluation across 46 pre-registered analyses.
+The pipeline extracts frozen embeddings from 4 foundation models (RAD-DINO,
+BiomedCLIP, torchxrayvision, DINOv2-B), trains lightweight probes, and applies
+conformal prediction methods (APS, RAPS, Mondrian, Conformal Risk Control,
+Learn Then Test). A WHO-TPP–aligned triage rule (sensitivity ≥90%, specificity
+≥70%) is retained as a worked example and its true operating envelope reported
+honestly — including where it falls short of the TPP under prospectively-valid
+threshold transfer.
 
 An interactive [Streamlit demo](app/) is included.
 
@@ -63,7 +96,12 @@ Raw images are not redistributed. See [`data/raw/README.md`](data/raw/README.md)
 │   ├── 09_tier3_analyses.py         Baselines, DCA, computational cost, t-SNE
 │   ├── 10_figures_and_final.py      Main figures + drift monitoring, Venn-ABERS
 │   ├── 11_supplementary_figures.py  Supplementary figures (sFig 5, 8-15)
-│   └── 12_diagrammatic_figures.py   Fig 1 (study design), sFig 1 (CONSORT)
+│   ├── 12_diagrammatic_figures.py   Fig 1 (study design), sFig 1 (CONSORT)
+│   ├── corrected_pipeline.py        Held-out conformal calibration (authoritative)
+│   ├── corrected_sensitivity.py     Corrected CPU sensitivity analyses
+│   ├── corrected_gpu_figures.py     Corrected GPU-sensitivity figures (sFig S4, held-out)
+│   ├── corrected_venn_abers.py      Corrected Venn-ABERS intervals (held-out dev)
+│   └── corrected_cross_conformal.py Corrected CV+ cross-conformal (held-out dev)
 │
 ├── app/                             Interactive Streamlit demo
 │   ├── app.py                       Demo application
@@ -72,8 +110,8 @@ Raw images are not redistributed. See [`data/raw/README.md`](data/raw/README.md)
 │   └── conformal_thresholds.json    Mondrian conformal thresholds
 │
 └── outputs/                         Pre-computed results
-    ├── tables/                      53 CSV result files
-    └── figures/                     21 publication figures (PNG)
+    ├── tables/                      68 CSV result files
+    └── figures/                     26 publication figures (PNG/PDF)
 ```
 
 ## Requirements
@@ -152,20 +190,49 @@ extraction, or runs on CPU (~30 seconds per image).
 | `10_figures_and_final.py` | Main figures + drift monitoring, Venn-ABERS, cross-conformal | Fig 2-7, sFig 2-4, 6-7 |
 | `11_supplementary_figures.py` | Remaining supplementary figures | sFig 5, 8-15 |
 | `12_diagrammatic_figures.py` | Study design schematic and CONSORT flow | Fig 1, sFig 1 |
+| `corrected_pipeline.py` | Held-out conformal calibration (split-valid; authoritative headline) | `corrected_conformal_results.csv` |
+| `corrected_sensitivity.py` | Corrected CPU sensitivity (label noise, seed/resplit, meta-coverage, cal-set size, subgroups) | `corrected_*.csv` |
+| `corrected_gpu_figures.py` | Corrected GPU-sensitivity figure: image-quality degradation (sFig S4), marginal + TB-class coverage | `sfig_image_degradation_corrected.{png,pdf}` |
+| `corrected_venn_abers.py` | Corrected Venn-ABERS probability intervals (isotonic calibrators on held-out dev, not the probe-training split) | `venn_abers_corrected.csv` (+`_summary`) |
+| `corrected_cross_conformal.py` | Corrected CV+ over the in-distribution held-out dev pool (shows marginal CV+ under-covers the TB class + emits empty sets) | `cross_conformal_corrected.csv` |
 
-See [`data_dictionary.md`](data_dictionary.md) for detailed descriptions of all 53 output CSV files.
+> **Note.** `corrected_pipeline.py`, `corrected_sensitivity.py`,
+> `corrected_gpu_figures.py`, `corrected_venn_abers.py`, and
+> `corrected_cross_conformal.py` supersede the in-sample calibration in scripts
+> `03`–`06`, the legacy degradation figure in `11_supplementary_figures.py`, and
+> the in-sample Venn-ABERS / pooled CV+ in `10_figures_and_final.py` for all
+> reported results. The numbered scripts are retained to document the original
+> (superseded) design and the audit trail; do not cite their non-`corrected_`
+> outputs.
 
-## Key Results
+See [`data_dictionary.md`](data_dictionary.md) for detailed descriptions of the output CSV files.
+
+## Key Results (corrected, held-out calibration)
+
+Primary model: RAD-DINO, linear probe, Mondrian, α=0.10, TBX11K test (n=5,879),
+conformal calibration on the held-out development split (n_cal=1,260).
 
 | Metric | Value | 95% CI |
 |--------|-------|--------|
-| AUROC (RAD-DINO, TBX11K test) | 0.916 | [0.903, 0.928] |
-| TB-class coverage (Mondrian, α=0.10) | 94.1% | [92.0%, 96.0%] |
-| Singleton fraction | 85.3% | — |
-| WHO TPP sensitivity | 90.2% | — |
-| WHO TPP specificity | 72.1% | — |
+| AUROC (RAD-DINO, TBX11K test) | 0.914 | [0.900, 0.927] |
+| Marginal coverage (Mondrian, α=0.10) | 91.4% | [89.4%, 92.9%] |
+| TB-class coverage | 92.5% | [85.3%, 98.6%] |
+| Empty-set fraction | 0.0% | — |
+| Singleton fraction | 73.3% | — |
+| Class-coverage disparity | 1.3 pts | — |
 
-All 5 pre-registered deployment gates passed (G1-G4 PASS; G4 with weighted conformal prediction).
+Isotonic recalibration raises marginal coverage to 94.0%. All five pre-registered
+gates pass under the corrected design.
+
+**In-sample defect, for contrast** (probe-training split reused for calibration):
+94.1% TB-class coverage but only 47.5% marginal coverage with 14.7% empty sets —
+a degenerate predictor that passes a class-conditional check while failing globally.
+
+**WHO Type 2 TPP.** The discriminative frontier reaches the TPP corner (90.5%
+sensitivity, 71.5% specificity) only under in-sample threshold selection. Under
+prospectively-valid threshold transfer the operating point meets the 90%
+sensitivity floor (92.5%) but not the 70% specificity target (64.1%); the TPP
+is therefore not met under a valid transfer.
 
 Split manifest SHA-256: `12a65e3a500d9f473ecbfd3f1787c43eb2537c2db742a7bb52538a58da75e440`
 
@@ -174,9 +241,9 @@ Split manifest SHA-256: `12a65e3a500d9f473ecbfd3f1787c43eb2537c2db742a7bb52538a5
 If you use this code, please cite:
 
 ```
-Farquhar H. Conformal prediction sets on frozen foundation-model embeddings
-for WHO-TPP-aligned tuberculosis chest X-ray triage: a multi-cohort derivation
-and external validation study. 2026. Code: https://doi.org/10.5281/zenodo.19718656
+Farquhar H. Valid and recalibratable conformal prediction sets on frozen
+foundation-model embeddings for tuberculosis chest radiograph triage: a
+correction and evaluation study. 2026. Code: https://doi.org/10.5281/zenodo.19718656
 ```
 
 ## License

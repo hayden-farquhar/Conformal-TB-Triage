@@ -455,25 +455,38 @@ def run_lodo():
         if train_m.sum() < 50: continue
 
         train_idx = np.where(train_m)[0]
-        cal_idx, dev_idx = train_test_split(train_idx, test_size=0.3, random_state=SEED, stratify=y[train_m])
+        # Held-out calibration (mirrors corrected main pipeline): probe on 70%,
+        # then split the 30% remainder into a disjoint isotonic-recalibration
+        # half and a disjoint conformal-calibration half. Conformal scores must
+        # be independent of the fitted probe AND of the recalibrator.
+        ptrain_idx, held_idx = train_test_split(
+            train_idx, test_size=0.3, random_state=SEED, stratify=y[train_m])
+        iso_idx, conf_idx = train_test_split(
+            held_idx, test_size=0.5, random_state=SEED, stratify=y[held_idx])
 
         pr = LogisticRegression(C=10, max_iter=2000, solver="lbfgs", random_state=SEED)
-        pr.fit(X[cal_idx], y[cal_idx])
+        pr.fit(X[ptrain_idx], y[ptrain_idx])
 
-        dp = pr.predict_proba(X[dev_idx])[:, 1]
-        iso = IsotonicRegression(out_of_bounds="clip"); iso.fit(dp, y[dev_idx])
-        c_prob = iso.predict(pr.predict_proba(X[cal_idx])[:, 1])
+        iso = IsotonicRegression(out_of_bounds="clip")
+        iso.fit(pr.predict_proba(X[iso_idx])[:, 1], y[iso_idx])
+        c_prob = iso.predict(pr.predict_proba(X[conf_idx])[:, 1])
         t_prob = iso.predict(pr.predict_proba(X[ho_m])[:, 1])
 
         auroc = roc_auc_score(y[ho_m], pr.predict_proba(X[ho_m])[:, 1]) if len(np.unique(y[ho_m])) > 1 else np.nan
-        sets = mondrian(c_prob, y[cal_idx], t_prob, 0.10)
+        sets = mondrian(c_prob, y[conf_idx], t_prob, 0.10)
         cov = [int(yi in s) for yi, s in zip(y[ho_m], sets)]
         tb_m = y[ho_m] == 1
         tb_cov = np.mean([cov[i] for i in range(len(cov)) if tb_m[i]]) if tb_m.any() else np.nan
+        marg_cov = float(np.mean(cov))
+        singleton = float(np.mean([len(s) == 1 for s in sets]))
 
         results.append({"held_out": held_out, "n": int(ho_m.sum()), "n_tb": int(y[ho_m].sum()),
-                        "auroc": round(auroc, 4), "tb_cov": round(tb_cov, 4)})
-        print(f"  {held_out:15s}: n={ho_m.sum():>5}  AUROC={auroc:.4f}  TB_cov={tb_cov:.4f}", flush=True)
+                        "n_conf": int(len(conf_idx)),
+                        "auroc": round(auroc, 4), "tb_cov": round(tb_cov, 4),
+                        "marg_cov": round(marg_cov, 4), "singleton": round(singleton, 4)})
+        print(f"  {held_out:15s}: n={ho_m.sum():>5}  n_conf={len(conf_idx):>5}  "
+              f"AUROC={auroc:.4f}  TB_cov={tb_cov:.4f}  marg={marg_cov:.4f}  single={singleton:.4f}",
+              flush=True)
 
     pd.DataFrame(results).to_csv(TABLES_DIR / "lodo_simulation.csv", index=False)
 

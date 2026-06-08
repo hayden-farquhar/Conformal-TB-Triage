@@ -464,7 +464,7 @@ def run_nontb_confusion():
 def main():
     t0 = time.time()
     print("=" * 70)
-    print("TIER 2 SENSITIVITY ANALYSES — Project 68")
+    print("TIER 2 SENSITIVITY ANALYSES — Conformal TB Triage")
     print("=" * 70)
 
     run_seed_stability()

@@ -605,7 +605,7 @@ def run_calset_sensitivity():
 def main():
     t0 = time.time()
     print("=" * 70)
-    print("CORE ANALYSES — Project 68: Conformal TB Triage")
+    print("CORE ANALYSES — Conformal TB Triage")
     print("=" * 70)
 
     run_bootstrap_cis()

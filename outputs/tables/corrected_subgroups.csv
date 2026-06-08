@@ -1,0 +1,9 @@
+probe,clinical_group,n,tb_prevalence,coverage,referred_rate,tier1_cleared,tier2_xpert,tier3_review
+linear,active_tb,454,1.0,0.9449,0.9449,0.0551,0.7797,0.1652
+linear,healthy,2632,0.0,0.9935,0.1026,0.8974,0.0065,0.0961
+linear,latent_tb,105,1.0,0.8381,0.8381,0.1619,0.6,0.2381
+linear,sick_non_tb,2688,0.0,0.833,0.6198,0.3802,0.167,0.4528
+mlp,active_tb,454,1.0,0.967,0.967,0.033,0.8194,0.1476
+mlp,healthy,2632,0.0,0.9863,0.2067,0.7933,0.0137,0.193
+mlp,latent_tb,105,1.0,0.9048,0.9048,0.0952,0.6571,0.2476
+mlp,sick_non_tb,2688,0.0,0.8426,0.6923,0.3077,0.1574,0.535

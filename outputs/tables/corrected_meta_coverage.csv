@@ -1,0 +1,2 @@
+n_resplits,marginal_mean,marginal_std,marginal_min,marginal_max,tb_mean,tb_std,frac_marginal_ge90,frac_tb_ge90,empty_mean
+200,0.9029,0.0068,0.8843,0.9184,0.9228,0.0195,0.68,0.855,0.0

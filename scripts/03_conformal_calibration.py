@@ -1,5 +1,5 @@
 """
-Conformal prediction calibration and evaluation for Project 68.
+Conformal prediction calibration and evaluation for the Conformal TB Triage pipeline.
 
 Uses probe predictions from Phase 2 to:
 1. Calibrate APS, RAPS, Mondrian (class-conditional) conformal methods
@@ -222,7 +222,7 @@ def three_tier_triage(pred_sets, y_true):
 
 def main():
     print("=" * 70)
-    print("CONFORMAL CALIBRATION — Project 68: Conformal TB Triage")
+    print("CONFORMAL CALIBRATION — Conformal TB Triage")
     print("=" * 70)
 
     preds = pd.read_parquet(PREDICTIONS_PATH)

@@ -1,10 +1,17 @@
 """
 Generate Fig 1 (study design schematic) and sFig 1 (CONSORT flow).
-Uses matplotlib only — no external rendering services.
 
-Run: python3 src/evaluation/diagrammatic_figures.py
+Fig 1 is authored as a Mermaid diagram (outputs/figures/fig1_study_design.mmd)
+and rendered with the mermaid-cli `mmdc`; the topology of the diagram is the
+argument (two independent data lineages converging only at threshold
+computation), so it is maintained as source rather than redrawn in matplotlib.
+sFig 1 (CONSORT) is still drawn with matplotlib.
+
+Run: python3 12_diagrammatic_figures.py
 """
 
+import shutil
+import subprocess
 from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
@@ -48,140 +55,28 @@ def draw_arrow(ax, x1, y1, x2, y2, color="#555555"):
 # Fig 1: Study Design Schematic
 # ─────────────────────────────────────────────────────────────────────
 def fig1_study_design():
-    print("  Fig 1: Study design schematic...", flush=True)
-    fig, ax = plt.subplots(figsize=(10, 14))
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 15)
-    ax.axis("off")
+    """Render Fig 1 from the Mermaid source via mmdc (PNG + PDF).
 
-    # Colours
-    C_DATA = ("#f0f4f8", "#457B9D")
-    C_MODEL = ("#fef3f0", "#E63946")
-    C_CONF = ("#f0f8f4", "#2A9D8F")
-    C_OUT = ("#fef9f0", "#E9C46A")
-
-    # ── Layer 1: Datasets ──
-    y = 14.0
-    ax.text(5, y + 0.5, "PUBLIC CXR DATASETS", ha="center", fontsize=10,
-            fontweight="bold", color="#457B9D")
-
-    datasets = [
-        ("Shenzhen\nn = 662\nTB: 336", 1.5),
-        ("Montgomery\nn = 138\nTB: 58", 3.5),
-        ("TBX11K\nn = 11,701\nTB: 799", 5.5),
-        ("Pakistan\nn = 3,008\nTB: 2,494", 7.5),
-        ("CheXpert\nn = 5,000\nnon-TB", 9.2),
-    ]
-    for text, x in datasets:
-        draw_box(ax, x, y - 0.7, 1.6, 1.0, text, *C_DATA, fontsize=7)
-
-    # ── Layer 2: Splits ──
-    y = 12.0
-    ax.text(5, y + 0.5, "SPLIT ALLOCATION", ha="center", fontsize=10,
-            fontweight="bold", color="#457B9D")
-
-    splits = [
-        ("Calibration\nn = 800\nSZ + MG", 1.5),
-        ("Development\nn = 3,510\nTBX11K 30%", 3.5),
-        ("Primary Test\nn = 8,191\nTBX11K 70%", 5.5),
-        ("External Test\nn = 3,008\nPakistan", 7.5),
-        ("Distractor\nn = 5,000\nCheXpert", 9.2),
-    ]
-    for text, x in splits:
-        draw_box(ax, x, y - 0.7, 1.6, 1.0, text, *C_DATA, fontsize=7)
-
-    # Arrows: datasets → splits
-    for (_, xs), (_, xd) in zip(datasets, splits):
-        draw_arrow(ax, xs, 12.8, xd, 12.5)
-
-    # ── Layer 3: Frozen embeddings ──
-    y = 9.8
-    ax.text(5, y + 0.5, "FROZEN FOUNDATION-MODEL EMBEDDINGS", ha="center",
-            fontsize=10, fontweight="bold", color="#E63946")
-
-    models = [
-        ("RAD-DINO\nViT-B/16, 768-d\nprimary", 2.0),
-        ("BiomedCLIP\nViT-B/16, 512-d", 4.2),
-        ("torchxrayvision\nDenseNet-121, 1024-d", 6.4),
-        ("DINOv2-B\nViT-B/14, 768-d\nnon-medical control", 8.6),
-    ]
-    for text, x in models:
-        draw_box(ax, x, y - 0.7, 1.9, 1.0, text, *C_MODEL, fontsize=7)
-
-    # Wide arrow: splits → embeddings
-    draw_arrow(ax, 5, 10.7, 5, 10.4)
-
-    # ── Layer 4: Probes ──
-    y = 7.8
-    ax.text(5, y + 0.5, "PROBE CLASSIFIERS", ha="center", fontsize=10,
-            fontweight="bold", color="#E63946")
-
-    probes = [
-        ("Linear Probe\n(primary)", 2.0),
-        ("k-NN", 4.2),
-        ("XGBoost", 6.4),
-        ("MLP", 8.6),
-    ]
-    for text, x in probes:
-        draw_box(ax, x, y - 0.5, 1.6, 0.7, text, *C_MODEL, fontsize=8)
-
-    draw_arrow(ax, 5, 8.8, 5, 8.3)
-
-    # ── Layer 5: Calibration ──
-    y = 6.5
-    draw_box(ax, 5, y, 3.0, 0.6, "Isotonic Probability Calibration",
-             *C_CONF, fontsize=9)
-
-    draw_arrow(ax, 5, 7.0, 5, 6.8)
-
-    # ── Layer 6: Conformal prediction ──
-    y = 5.3
-    ax.text(5, y + 0.5, "CONFORMAL PREDICTION", ha="center", fontsize=10,
-            fontweight="bold", color="#2A9D8F")
-
-    methods = [
-        ("APS", 1.5),
-        ("RAPS", 3.2),
-        ("Mondrian\n(primary)", 5.0),
-        ("CRC\nFNR ≤ 0.10", 6.8),
-        ("LTT\nJoint control", 8.5),
-    ]
-    for text, x in methods:
-        draw_box(ax, x, y - 0.5, 1.4, 0.7, text, *C_CONF, fontsize=7)
-
-    draw_arrow(ax, 5, 6.2, 5, 5.8)
-
-    # ── Layer 7: Triage output ──
-    y = 3.5
-    ax.text(5, y + 0.5, "THREE-TIER TRIAGE OUTPUT", ha="center", fontsize=10,
-            fontweight="bold", color="#E9C46A")
-
-    tiers = [
-        ("TIER 1: CLEAR\nPrediction set = {non-TB}\nDischarge", 2.0, "#d4edda", "#28a745"),
-        ("TIER 2: REFER\nPrediction set = {TB}\nXpert MTB/RIF", 5.0, "#f8d7da", "#dc3545"),
-        ("TIER 3: UNCERTAIN\nPrediction set = {TB, non-TB}\nClinical review", 8.0, "#fff3cd", "#ffc107"),
-    ]
-    for text, x, fc, ec in tiers:
-        draw_box(ax, x, y - 0.5, 2.5, 0.9, text, fc, ec, fontsize=7, fontweight="bold")
-
-    draw_arrow(ax, 5, 4.3, 5, 4.0)
-
-    # ── Layer 8: WHO TPP ──
-    y = 1.7
-    draw_box(ax, 5, y, 5.0, 0.8,
-             "WHO TPP ALIGNMENT\nSensitivity ≥ 90%  |  Specificity ≥ 70%\nConformal statistical guarantee",
-             *C_OUT, fontsize=8, fontweight="bold")
-
-    draw_arrow(ax, 5, 2.6, 5, 2.1)
-
-    # ── Side annotations ──
-    ax.text(0.3, 9.3, "Weights\nfrozen\n(no fine-\ntuning)", ha="center", fontsize=7,
-            style="italic", color="#888888")
-    ax.text(0.3, 5.0, "Calibrated\non n = 800\n(SZ + MG)", ha="center", fontsize=7,
-            style="italic", color="#888888")
-
-    fig.tight_layout()
-    save(fig, "fig1_study_design")
+    The diagram lives in outputs/figures/fig1_study_design.mmd. Its topology
+    encodes the corrected pipeline (probe-training and held-out conformal-
+    calibration lineages as independent siblings that converge only at
+    threshold computation), so the .mmd is the single source of truth.
+    """
+    print("  Fig 1: Study design schematic (Mermaid)...", flush=True)
+    mmd = FIGURES_DIR / "fig1_study_design.mmd"
+    mmdc = shutil.which("mmdc")
+    if mmdc is None:
+        print("    mmdc (mermaid-cli) not found on PATH; skipping render.")
+        print(f"    Render manually: mmdc -i {mmd} -o {FIGURES_DIR / 'fig1_study_design.png'} -s 3 -b white")
+        print(f"                     mmdc -i {mmd} -o {FIGURES_DIR / 'fig1_study_design.pdf'} -b white --pdfFit")
+        return
+    subprocess.run([mmdc, "-i", str(mmd),
+                    "-o", str(FIGURES_DIR / "fig1_study_design.png"),
+                    "-s", "3", "-b", "white"], check=True)
+    subprocess.run([mmdc, "-i", str(mmd),
+                    "-o", str(FIGURES_DIR / "fig1_study_design.pdf"),
+                    "-b", "white", "--pdfFit"], check=True)
+    print("  Saved fig1_study_design.png + .pdf")
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -255,32 +150,35 @@ def sfig1_consort():
     ax.text(6, y + 0.5, "SPLIT ALLOCATION (stratified by dataset, TB status, sex, age)",
             ha="center", fontsize=9, fontweight="bold", color="#2A9D8F")
 
-    # Calibration
-    draw_box(ax, 1.8, y - 0.5, 3.0, 1.2,
-             "CALIBRATION SET\nn = 800\n\n"
+    # Probe-training set (NLM) — fits the probe, NOT the conformal calibration
+    draw_box(ax, 1.8, y - 0.65, 3.0, 1.6,
+             "PROBE-TRAINING SET\nn = 800\n\n"
              "Shenzhen: n = 662\n"
              "  TB+: 336, TB−: 326\n"
              "Montgomery: n = 138\n"
-             "  TB+: 58, TB−: 80",
-             *C_SPLIT, fontsize=7)
+             "  TB+: 58, TB−: 80\n"
+             "→ trains linear probe",
+             *C_SPLIT, fontsize=6.5)
 
-    # Dev
-    draw_box(ax, 5.5, y - 0.5, 2.5, 1.2,
+    # Dev — held-out conformal calibration (independent of the probe)
+    draw_box(ax, 5.5, y - 0.65, 2.5, 1.6,
              "DEVELOPMENT SET\nn = 3,510\n\n"
              "TBX11K (30%)\n"
-             "TB+: 240\n"
-             "TB−: 2,280\n"
-             "Unknown: 990",
-             *C_SPLIT, fontsize=7)
+             "TB+: 240, TB−: 2,280\n"
+             "Unknown: 990\n"
+             "binary: n = 2,520\n"
+             "→ conformal calibration",
+             *C_SPLIT, fontsize=6.5)
 
     # Test
-    draw_box(ax, 8.5, y - 0.5, 2.5, 1.2,
+    draw_box(ax, 8.5, y - 0.65, 2.5, 1.6,
              "PRIMARY TEST SET\nn = 8,191\n\n"
              "TBX11K (70%)\n"
-             "TB+: 559\n"
-             "TB−: 5,320\n"
-             "Unknown: 2,312",
-             *C_SPLIT, fontsize=7)
+             "TB+: 559, TB−: 5,320\n"
+             "Unknown: 2,312\n"
+             "binary: n = 5,879\n"
+             "→ evaluation",
+             *C_SPLIT, fontsize=6.5)
 
     draw_arrow(ax, 6, 10.8, 6, 10.1)
     # Fan out arrows
@@ -322,27 +220,29 @@ def sfig1_consort():
     draw_box(ax, 6, y, 8, 0.7,
              "PRIMARY ANALYSIS\n"
              "RAD-DINO + Linear Probe + Mondrian Conformal (α = 0.10)\n"
-             "Calibrated on n = 800 | Tested on n = 8,191",
+             "Conformal calibrated on held-out Dev (n = 1,260) | Tested on n = 5,879",
              "#fef9f0", "#E9C46A", fontsize=8, fontweight="bold")
 
     draw_arrow(ax, 6, 5.1, 6, 4.4)
 
     # ── Row 9: Results ──
     y = 2.5
-    draw_box(ax, 3.0, y, 4.5, 1.0,
-             "PRIMARY RESULTS\n\n"
-             "AUROC: 0.916 [0.903, 0.928]\n"
-             "TB coverage: 94.1% [92.0%, 96.0%]\n"
-             "Singleton fraction: 85.3%",
-             "#d4edda", "#28a745", fontsize=8)
+    draw_box(ax, 3.0, y, 4.5, 1.3,
+             "PRIMARY RESULTS (held-out calibration)\n\n"
+             "AUROC: 0.914 [0.900, 0.927]\n"
+             "Marginal coverage: 91.4% [89.4, 92.9]\n"
+             "TB coverage: 92.5% | Empty sets: 0%\n"
+             "Singleton: 73.3% | Disparity: 1.3 pp",
+             "#d4edda", "#28a745", fontsize=7.5)
 
-    draw_box(ax, 8.5, y, 4.5, 1.0,
-             "DEPLOYMENT GATES\n\n"
-             "G1 Discrimination: PASS\n"
-             "G2 Conformal validity: PASS\n"
-             "G3 Clinical utility: PASS\n"
-             "G4 Equity: PASS (weighted CP)",
-             "#d4edda", "#28a745", fontsize=8)
+    draw_box(ax, 8.5, y, 4.5, 1.3,
+             "DEPLOYMENT GATES — all PASS\n\n"
+             "G1 AUROC 0.914 ≥ 0.75\n"
+             "G2 TB coverage 92.5% ≥ 85%\n"
+             "G3 Singleton 73.3% ≥ 40%\n"
+             "G4 Disparity 1.3 ≤ 15 pp (native CP)\n"
+             "G5 Recal. set ≤ 500 CXRs",
+             "#d4edda", "#28a745", fontsize=7)
 
     draw_arrow(ax, 4.5, 3.6, 3.0, 3.0)
     draw_arrow(ax, 7.5, 3.6, 8.5, 3.0)

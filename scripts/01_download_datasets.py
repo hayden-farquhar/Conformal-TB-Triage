@@ -1,5 +1,5 @@
 """
-Dataset download and verification for Project 68: Conformal TB Triage.
+Dataset download and verification for the Conformal TB Triage pipeline.
 
 Usage:
     # On Google Colab (recommended for GPU embedding extraction):
@@ -314,7 +314,7 @@ def print_verification_table(results: list[dict]):
 
 COLAB_SETUP_INSTRUCTIONS = """
 # ============================================================
-# Google Colab Setup for Project 68: Conformal TB Triage
+# Google Colab Setup for Conformal TB Triage
 # ============================================================
 #
 # Run this in a Colab notebook cell before using the download script:
@@ -351,7 +351,7 @@ COLAB_SETUP_INSTRUCTIONS = """
 # ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="Download and verify datasets for P68")
+    parser = argparse.ArgumentParser(description="Download and verify datasets for the Conformal TB Triage pipeline")
     parser.add_argument(
         "--dataset",
         choices=list(DATASETS.keys()) + ["all", "auto"],

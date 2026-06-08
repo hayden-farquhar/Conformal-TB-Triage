@@ -1,5 +1,5 @@
 """
-Probe training for Project 68: Conformal TB Triage.
+Probe training for the Conformal TB Triage pipeline.
 
 Trains 4 probe types on each of 7 embedding models using the calibration set.
 Evaluates on dev, test, and external sets. Saves predictions and metrics.
@@ -214,7 +214,7 @@ EVAL_SPLITS = ["calibration", "dev", "test", "ext_pakistan"]
 
 def main():
     print("=" * 70)
-    print("PROBE TRAINING — Project 68: Conformal TB Triage")
+    print("PROBE TRAINING — Conformal TB Triage")
     print("=" * 70)
 
     all_results = []

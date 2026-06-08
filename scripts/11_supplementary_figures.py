@@ -66,7 +66,7 @@ def sfig5_image_degradation():
     ax2.set_title("Conformal Coverage Under Degradation")
     ax2.legend(fontsize=7, loc="lower left")
 
-    fig.suptitle("sFig 5: Image Quality Degradation Sensitivity", fontsize=11)
+    fig.suptitle("Image Quality Degradation Sensitivity", fontsize=11)
     fig.tight_layout()
     save(fig, "sfig5_image_degradation")
 
@@ -100,7 +100,7 @@ def sfig8_shortcut():
                     (i, max(row["dataset_auroc"], row["tb_auroc"]) + 0.002),
                     ha="center", fontsize=7, color="black")
 
-    ax.set_title("sFig 8: Shortcut Risk — Dataset-Origin vs TB Classification AUROC")
+    ax.set_title("Shortcut Risk — Dataset-Origin vs TB Classification AUROC")
     fig.tight_layout()
     save(fig, "sfig8_shortcut")
 
@@ -151,7 +151,7 @@ def sfig9_drift():
 
     ax.set_xlabel("Sequential Window Index")
     ax.set_ylabel("MMD² Statistic")
-    ax.set_title("sFig 9: Embedding Drift Monitoring Simulation")
+    ax.set_title("Embedding Drift Monitoring Simulation")
     ax.legend(fontsize=7, loc="upper left")
     fig.tight_layout()
     save(fig, "sfig9_drift")
@@ -170,7 +170,7 @@ def sfig10_shap():
     ax.set_yticks(range(len(df)))
     ax.set_yticklabels([f"dim {int(d)}" for d in df["dim"]], fontsize=6)
     ax.set_xlabel("Mean |SHAP Value|")
-    ax.set_title("sFig 10: RAD-DINO Embedding Dimension Importance\n(XGBoost Probe, Top 50)")
+    ax.set_title("RAD-DINO Embedding Dimension Importance\n(XGBoost Probe, Top 50)")
     fig.tight_layout()
     save(fig, "sfig10_shap")
 
@@ -208,7 +208,7 @@ def sfig11_venn_abers():
     ax2.set_xlim(-0.02, 1.02)
     ax2.set_ylim(-0.02, 1.02)
 
-    fig.suptitle("sFig 11: Venn-ABERS Conformal Probability Intervals", fontsize=11)
+    fig.suptitle("Venn-ABERS Conformal Probability Intervals", fontsize=11)
     fig.tight_layout()
     save(fig, "sfig11_venn_abers")
 
@@ -233,7 +233,7 @@ def sfig12_nontb_confusion():
         ax.annotate(f"{row['n_false_positive']}/{row['n_total']}\n({row['fp_rate']:.1%})",
                     (i, row["fp_rate"] + 0.01), ha="center", fontsize=9)
 
-    ax.set_title("sFig 12: False Positive Rate by Non-TB Category\n(RAD-DINO + Linear Probe on TBX11K Test)")
+    ax.set_title("False Positive Rate by Non-TB Category\n(RAD-DINO + Linear Probe on TBX11K Test)")
     fig.tight_layout()
     save(fig, "sfig12_nontb_confusion")
 
@@ -266,7 +266,7 @@ def sfig13_seed_stability():
         margin = max(sd * 4, 0.01)
         ax.set_ylim(mu - margin, mu + margin)
 
-    fig.suptitle("sFig 13: Seed Stability (RAD-DINO + Linear Probe + Mondrian)", fontsize=11)
+    fig.suptitle("Seed Stability (RAD-DINO + Linear Probe + Mondrian)", fontsize=11)
     fig.tight_layout()
     save(fig, "sfig13_seed_stability")
 
@@ -302,7 +302,7 @@ def sfig14_geographic_gap():
             transform=ax.transAxes, ha="right", fontsize=9,
             bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
 
-    ax.set_title("sFig 14: Geographic Representation of WHO High-Burden TB Countries", fontsize=10)
+    ax.set_title("Geographic Representation of WHO High-Burden TB Countries", fontsize=10)
     fig.tight_layout()
     save(fig, "sfig14_geographic_gap")
 
@@ -344,7 +344,7 @@ def sfig15_computational_cost():
     ax2.set_ylabel("Embedding File Size (MB)")
     ax2.set_title("Embedding Dimensionality vs Storage")
 
-    fig.suptitle("sFig 15: Computational Cost and Deployment Footprint", fontsize=11)
+    fig.suptitle("Computational Cost and Deployment Footprint", fontsize=11)
     fig.tight_layout()
     save(fig, "sfig15_computational_cost")
 

@@ -460,7 +460,7 @@ def run_computational_cost():
 def main():
     t0 = time.time()
     print("=" * 70)
-    print("TIER 3 ANALYSES — Project 68: Conformal TB Triage")
+    print("TIER 3 ANALYSES — Conformal TB Triage")
     print("=" * 70)
 
     run_baselines()

@@ -1,0 +1,98 @@
+---
+config:
+  theme: base
+  securityLevel: loose
+  themeVariables:
+    fontSize: 15px
+  flowchart:
+    htmlLabels: true
+    curve: basis
+    nodeSpacing: 45
+    rankSpacing: 55
+    wrappingWidth: 320
+    subGraphTitleMargin:
+      top: 8
+      bottom: 20
+---
+%% Figure 1 - Study design schematic (corrected analysis pipeline).
+%% The thesis is encoded in the Step-3 topology: a purple probe-training
+%% lineage (Shenzhen+Montgomery) and a green held-out conformal-calibration
+%% lineage (TBX11K development) run as separate siblings and converge only at
+%% threshold computation - i.e. the conformal calibration data are independent
+%% of probe training. No deployment coverage guarantee is asserted.
+%% Render PNG: mmdc -i fig1_study_design.mmd -o fig1_study_design.png -s 3 -b white
+%% Render PDF: mmdc -i fig1_study_design.mmd -o fig1_study_design.pdf -b white --pdfFit
+flowchart TD
+
+  subgraph S1["<b><span style='font-size:21px'>STEP 1 &nbsp;&middot;&nbsp; Public CXR datasets &nbsp;(N = 20,509)</span></b>"]
+    direction LR
+    SZ["Shenzhen<br/>n = 662"]
+    MG["Montgomery<br/>n = 138"]
+    TBX["TBX11K<br/>n = 11,701"]
+    PAK["Mendeley Pakistan<br/>n = 3,008"]
+    CHX["CheXpert<br/>n = 5,000"]
+  end
+
+  subgraph S2["<b><span style='font-size:21px'>STEP 2 &nbsp;&middot;&nbsp; Frozen foundation-model embeddings</span></b>"]
+    EMB["Weights frozen &mdash; no fine-tuning<br/>RAD-DINO 768-d (primary)<br/>BiomedCLIP 512-d<br/>torchxrayvision 1024-d<br/>DINOv2-B 768-d (non-medical control)"]
+  end
+
+  subgraph S3["<b><span style='font-size:21px'>STEP 3 &nbsp;&middot;&nbsp; Probe training &amp; held-out conformal calibration</span></b>"]
+    direction LR
+    PT["<b>Probe-training lineage</b><br/>Shenzhen + Montgomery (n = 800)<br/>Linear (primary), k-NN, XGBoost, MLP"]
+    DEVCAL["<b>Held-out conformal-calibration lineage</b><br/>TBX11K development split (n = 2,520)<br/><i>different images; never used to train the probe</i><br/>50/50 &rarr; isotonic recal (1,260) + conformal cal (1,260)"]
+    CONF["<b>Mondrian class-conditional thresholds</b><br/>+ isotonic probability recalibration<br/>(APS for comparison), &alpha; = 0.10"]
+  end
+
+  subgraph S4["<b><span style='font-size:21px'>STEP 4 &nbsp;&middot;&nbsp; Prediction sets &amp; three-tier triage</span></b>"]
+    direction LR
+    T1["<b>Tier 1 &mdash; CLEAR</b><br/>set = {non-TB}<br/>discharge"]
+    SETS["<b>Prediction sets</b><br/>applied to TBX11K test (n = 5,879)<br/>+ Pakistan (n = 3,008)<br/>+ CheXpert distractor"]
+    T2["<b>Tier 2 &mdash; REFER</b><br/>set = {TB}<br/>Xpert MTB/RIF"]
+    T3["<b>Tier 3 &mdash; UNCERTAIN</b><br/>set = {TB, non-TB}<br/>clinical review"]
+  end
+
+  NOTE["WHO Type 2 TPP rule (sens &ge; 90% / spec &ge; 70%) is reported as a worked example &mdash; not asserted as met in deployment.<br/>Conformal validity is a property of the calibration distribution, conditional on exchangeability."]
+
+  SZ --> EMB
+  MG --> EMB
+  TBX --> EMB
+  PAK --> EMB
+  CHX --> EMB
+
+  EMB --> PT
+  EMB --> DEVCAL
+  PT -->|"fitted probe"| CONF
+  DEVCAL -->|"held-out scores"| CONF
+  CONF --> SETS
+  SETS --> T1
+  SETS --> T2
+  SETS --> T3
+  T1 --> NOTE
+  T2 --> NOTE
+  T3 --> NOTE
+
+  classDef source fill:#e4eefb,stroke:#3a6ea5,stroke-width:1.3px,color:#173a5e;
+  classDef embed fill:#fde7e3,stroke:#E63946,stroke-width:1.5px,color:#7a1a22;
+  classDef probeLin fill:#ece2f6,stroke:#7b4fa0,stroke-width:1.6px,color:#3d2360;
+  classDef calib fill:#dcf1ea,stroke:#1f8e80,stroke-width:1.7px,color:#10473f;
+  classDef output fill:#fcefd2,stroke:#d99a1c,stroke-width:1.6px,color:#6b4a00;
+  classDef tier1 fill:#cdeccd,stroke:#28a745,stroke-width:1.6px,color:#114a1c;
+  classDef tier2 fill:#f7cdd2,stroke:#dc3545,stroke-width:1.6px,color:#69121c;
+  classDef tier3 fill:#fdeeb3,stroke:#e0a800,stroke-width:1.6px,color:#6b5200;
+  classDef note fill:#fbf6ec,stroke:#b9923a,stroke-width:1.2px,color:#5c4708;
+
+  class SZ,MG,TBX,PAK,CHX source;
+  class EMB embed;
+  class PT probeLin;
+  class DEVCAL,CONF calib;
+  class SETS output;
+  class T1 tier1;
+  class T2 tier2;
+  class T3 tier3;
+  class NOTE note;
+
+  style S1 fill:#f4f8fd,stroke:#9bb6d4,stroke-width:1.5px;
+  style S2 fill:#fdf3f1,stroke:#eaa9a3,stroke-width:1.5px;
+  style S3 fill:#f7f4fb,stroke:#c2b2d8,stroke-width:1.5px;
+  style S4 fill:#fdf8ee,stroke:#e8c98a,stroke-width:1.5px;
