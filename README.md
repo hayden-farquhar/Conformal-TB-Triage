@@ -209,6 +209,13 @@ extraction, or runs on CPU (~30 seconds per image).
 
 See [`data_dictionary.md`](data_dictionary.md) for detailed descriptions of the output CSV files.
 
+> **Figure file naming.** The figure files in `outputs/figures/` are reproducibility
+> outputs whose filenames follow an internal scheme and do not map one-to-one onto
+> the manuscript supplement's figure numbers (S1–S11). The authoritative, numbered
+> figures are those in the paper and its supplement; treat the files here as the
+> regenerated sources behind them, identified by descriptive name rather than by
+> supplement number.
+
 ## Key Results (held-out calibration)
 
 Primary model: RAD-DINO, linear probe, Mondrian, α=0.10, TBX11K test (n=5,879),
