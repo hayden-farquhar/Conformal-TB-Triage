@@ -335,7 +335,10 @@ def main():
 
     # ── Save results ──
     conf_df = pd.DataFrame(all_conformal_results)
-    conf_df.to_csv(TABLES_DIR / "conformal_results.csv", index=False)
+    # In-sample (probe-training-split) calibration — the defect documented in the
+    # manuscript. The authoritative held-out table conformal_results.csv is written
+    # by conformal_pipeline.py; this arm is suffixed to avoid clobbering it.
+    conf_df.to_csv(TABLES_DIR / "conformal_results_insample.csv", index=False)
 
     triage_df = pd.DataFrame(all_triage_results)
     triage_df.to_csv(TABLES_DIR / "triage_results.csv", index=False)
@@ -438,7 +441,7 @@ def main():
     print(f"\n  Joint (G1-G4): {'ALL PASS' if all_pass else 'SOME FAILED'}")
 
     print(f"\nResults saved to: {TABLES_DIR}/")
-    print("  conformal_results.csv")
+    print("  conformal_results_insample.csv")
     print("  triage_results.csv")
     print("  crc_results.csv")
 

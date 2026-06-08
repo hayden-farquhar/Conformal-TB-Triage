@@ -354,13 +354,13 @@ def sfig15_computational_cost():
 # ─────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("Generating supplementary figures...", flush=True)
-    sfig5_image_degradation()
+    # Image-degradation and seed/resplit supplementary figures are owned by the
+    # held-out generators (gpu_sensitivity_figures.py, conformal_sensitivity.py).
     sfig8_shortcut()
     sfig9_drift()
     sfig10_shap()
     sfig11_venn_abers()
     sfig12_nontb_confusion()
-    sfig13_seed_stability()
     sfig14_geographic_gap()
     sfig15_computational_cost()
     print("\nDone. All supplementary figures saved to results/figures/")

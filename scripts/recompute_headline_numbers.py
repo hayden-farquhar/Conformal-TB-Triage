@@ -2,7 +2,7 @@
 Reconciliation recompute: emit the REAL numbers needed to reconcile the manuscript
 and supplement after the held-out conformal-calibration correction.
 
-Reuses the exact conformal maths from corrected_pipeline.py (no re-implementation).
+Reuses the exact conformal maths from conformal_pipeline.py (no re-implementation).
 Everything here runs from saved out-of-sample probe predictions -- no GPU /
 embedding re-run -- because dev/test/ext predictions are already out-of-sample for
 the NLM-trained probe.
@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split
 import sys
 SCRIPTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS))
-from corrected_pipeline import (
+from conformal_pipeline import (
     mondrian_thresholds, sets_from_mondrian, eval_sets, SEED,
 )
 

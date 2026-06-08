@@ -58,7 +58,7 @@ def fig1_study_design():
     """Render Fig 1 from the Mermaid source via mmdc (PNG + PDF).
 
     The diagram lives in outputs/figures/fig1_study_design.mmd. Its topology
-    encodes the corrected pipeline (probe-training and held-out conformal-
+    encodes the held-out pipeline (probe-training and held-out conformal-
     calibration lineages as independent siblings that converge only at
     threshold computation), so the .mmd is the single source of truth.
     """
@@ -250,7 +250,7 @@ def sfig1_consort():
     # ── Footer ──
     ax.text(6, 1.2,
             "Split manifest hash: 12a65e3a...da75e440 | Random seed: 42 | "
-            "Pre-registered: OSF doi.org/10.17605/OSF.IO/KBAMC",
+            "Pre-registered before test-set evaluation",
             ha="center", fontsize=7, style="italic", color="#888888")
 
     fig.tight_layout()

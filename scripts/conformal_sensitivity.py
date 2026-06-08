@@ -1,14 +1,14 @@
 """
-Corrected (held-out calibration) CPU sensitivity analyses.
+Held-out-calibration CPU sensitivity analyses.
 Supplementary tables S-noise / S-seed / S-resplit.
 
 These three analyses were originally computed under the in-sample-calibration
 pipeline (src/evaluation/sensitivity_analyses.py), which set Mondrian thresholds
-on the probe-TRAINING split -- the defect this revision corrects -- and required
-the Drive embeddings to retrain probes. The corrected versions below operate
+on the probe-TRAINING split -- the defect this revision addresses -- and required
+the Drive embeddings to retrain probes. The held-out versions below operate
 purely on the saved held-out predictions (results/probe_predictions.parquet,
 no GPU / no embedding re-run) and perturb the single operative source of
-randomness in the corrected pipeline: the conformal-calibration draw out of the
+randomness in the held-out pipeline: the conformal-calibration draw out of the
 held-out TBX11K `dev` pool, and the quality of its labels. The TBX11K `test`
 evaluation set is held FIXED throughout.
 
@@ -30,7 +30,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from corrected_pipeline import (
+from conformal_pipeline import (
     mondrian_thresholds,
     sets_from_mondrian,
     eval_sets,
@@ -64,7 +64,7 @@ def load_primary():
 
 def conf_half(dev_p, dev_y, seed):
     """The conformal-calibration half of the held-out dev pool, under a given
-    split seed (identical procedure to corrected_pipeline; SEED=42 reproduces
+    split seed (identical procedure to conformal_pipeline; SEED=42 reproduces
     the headline)."""
     idx = np.arange(len(dev_p))
     _, conf_idx = train_test_split(
@@ -113,7 +113,7 @@ def run_label_noise(dev_p, dev_y, test_p, test_y):
         print(f"  noise {frac:.0%}: marginal={np.mean(margs):.3f}±{np.std(margs):.3f} "
               f"TB={np.mean(tbs):.3f} empty={np.mean(empties):.3f}", flush=True)
     df = pd.DataFrame(rows)
-    df.to_csv(TABLES_DIR / "corrected_label_noise.csv", index=False)
+    df.to_csv(TABLES_DIR / "label_noise.csv", index=False)
     base = df.loc[df.noise_frac == 0.0, "marginal_mean"].iloc[0]
     drop20 = base - df.loc[df.noise_frac == 0.20, "marginal_mean"].iloc[0]
     print(f"  -> marginal coverage drops {drop20:.3f} from 0% to 20% calibration-label noise")
@@ -134,7 +134,7 @@ def run_seed_stability(dev_p, dev_y, test_p, test_y):
         print(f"  seed {s}: marginal={m['marginal_cov']:.3f} TB={m['tb_cov']:.3f} "
               f"empty={m['empty']:.3f} singleton={m['singleton']:.3f}", flush=True)
     df = pd.DataFrame(rows)
-    df.to_csv(TABLES_DIR / "corrected_seed_stability.csv", index=False)
+    df.to_csv(TABLES_DIR / "seed_stability.csv", index=False)
     msd = df.marginal_cov.std()
     tsd = df.tb_cov.std()
     all_marg_target = bool((df.marginal_cov >= 0.85).all())
@@ -148,7 +148,7 @@ def run_seed_stability(dev_p, dev_y, test_p, test_y):
 def run_meta_coverage(dev_p, dev_y, test_p, test_y):
     """200 random redraws of the dev 50/50 conformal split (resampling which
     held-out points calibrate the thresholds), evaluated on the FIXED test set.
-    Corrected replacement for the original 'mean ~75%, 0/200 reach >=90%'
+    Held-out replacement for the original 'mean ~75%, 0/200 reach >=90%'
     resplit-fragility finding, which was an artefact of the in-sample defect."""
     n_resplits = 200
     margs, tbs, empties = [], [], []
@@ -168,10 +168,10 @@ def run_meta_coverage(dev_p, dev_y, test_p, test_y):
         "frac_tb_ge90": round(float((tbs >= 0.90).mean()), 4),
         "empty_mean": round(empties.mean(), 4),
     }])
-    summary.to_csv(TABLES_DIR / "corrected_meta_coverage.csv", index=False)
+    summary.to_csv(TABLES_DIR / "meta_coverage.csv", index=False)
     pd.DataFrame({"resplit": np.arange(n_resplits), "marginal_cov": margs,
                   "tb_cov": tbs, "empty": empties}).to_csv(
-        TABLES_DIR / "corrected_meta_coverage_draws.csv", index=False)
+        TABLES_DIR / "meta_coverage_draws.csv", index=False)
     print(f"  -> marginal {margs.mean():.3f}±{margs.std():.3f}; "
           f"{(margs >= 0.90).mean():.0%} of resplits reach >=90% marginal "
           f"(original in-sample design: 0/200)")
@@ -180,7 +180,7 @@ def run_meta_coverage(dev_p, dev_y, test_p, test_y):
 
 # ---------------------------------------------------------------- 4. Calibration-set size
 def run_calset_sensitivity(dev_p, dev_y, test_p, test_y):
-    """Corrected calibration-set-size sensitivity. Under the held-out design the
+    """Held-out calibration-set-size sensitivity. Under the held-out design the
     operative 'calibration set' is the conformal-calibration pool, NOT the
     probe-training data. Subsample that held-out pool (stratified) at increasing
     fractions, keeping the probe and the test set FIXED, and measure how many
@@ -219,7 +219,7 @@ def run_calset_sensitivity(dev_p, dev_y, test_p, test_y):
         print(f"  {frac:.0%} ({n_sub:>4} cal): marginal={np.mean(margs):.3f}±{np.std(margs):.3f} "
               f"TB={np.mean(tbs):.3f}±{np.std(tbs):.3f} empty={np.mean(empties):.3f}", flush=True)
     df = pd.DataFrame(rows)
-    df.to_csv(TABLES_DIR / "corrected_calset_sensitivity.csv", index=False)
+    df.to_csv(TABLES_DIR / "calset_sensitivity.csv", index=False)
     stable = df[df.tb_cov_std < 0.02]
     if len(stable):
         print(f"  -> TB coverage stable (SD<0.02) from n_cal >= {int(stable.iloc[0].n_cal)}")
@@ -231,12 +231,12 @@ FIGS = REPO_ROOT / "outputs" / "figures"
 
 def make_figures():
     """Regenerate the two CPU-reproducible supplementary figures from the saved
-    corrected CSVs (held-out calibration), so the supplement is internally
-    consistent with the corrected text."""
-    ln = pd.read_csv(TABLES_DIR / "corrected_label_noise.csv")
-    sd = pd.read_csv(TABLES_DIR / "corrected_seed_stability.csv")
-    draws = pd.read_csv(TABLES_DIR / "corrected_meta_coverage_draws.csv")
-    cs = pd.read_csv(TABLES_DIR / "corrected_calset_sensitivity.csv")
+    held-out-calibration CSVs, so the supplement is internally
+    consistent with the held-out text."""
+    ln = pd.read_csv(TABLES_DIR / "label_noise.csv")
+    sd = pd.read_csv(TABLES_DIR / "seed_stability.csv")
+    draws = pd.read_csv(TABLES_DIR / "meta_coverage_draws.csv")
+    cs = pd.read_csv(TABLES_DIR / "calset_sensitivity.csv")
 
     # --- Label-noise figure ---
     fig, ax = plt.subplots(figsize=(6.4, 4.6))
@@ -255,8 +255,8 @@ def make_figures():
                  "(held-out calibration; probe fixed)")
     ax.legend(loc="center right", fontsize=9, frameon=False)
     fig.tight_layout()
-    fig.savefig(FIGS / "sfig_label_noise_corrected.pdf")
-    fig.savefig(FIGS / "sfig_label_noise_corrected.png", dpi=200)
+    fig.savefig(FIGS / "sfig_label_noise.pdf")
+    fig.savefig(FIGS / "sfig_label_noise.png", dpi=200)
     plt.close(fig)
 
     # --- Seed + resplit stability figure (two panels) ---
@@ -287,8 +287,8 @@ def make_figures():
                   "(in-sample design: 0/200)")
     axR.legend(loc="upper left", fontsize=9, frameon=False)
     fig.tight_layout()
-    fig.savefig(FIGS / "sfig_seed_resplit_corrected.pdf")
-    fig.savefig(FIGS / "sfig_seed_resplit_corrected.png", dpi=200)
+    fig.savefig(FIGS / "sfig_seed_resplit.pdf")
+    fig.savefig(FIGS / "sfig_seed_resplit.png", dpi=200)
     plt.close(fig)
 
     # --- Calibration-set-size figure ---
@@ -304,14 +304,14 @@ def make_figures():
     ax.set_ylabel("Coverage")
     ax.set_ylim(0.80, 1.0)
     ax.set_title("Coverage vs held-out calibration-set size\n"
-                 "(corrected design; probe and test fixed)")
+                 "(held-out design; probe and test fixed)")
     ax.legend(loc="lower right", fontsize=9, frameon=False)
     fig.tight_layout()
-    fig.savefig(FIGS / "sfig_calset_corrected.pdf")
-    fig.savefig(FIGS / "sfig_calset_corrected.png", dpi=200)
+    fig.savefig(FIGS / "sfig_calset_sensitivity.pdf")
+    fig.savefig(FIGS / "sfig_calset_sensitivity.png", dpi=200)
     plt.close(fig)
-    print("Figures written: sfig_label_noise_corrected, sfig_seed_resplit_corrected, "
-          "sfig_calset_corrected.")
+    print("Figures written: sfig_label_noise, sfig_seed_resplit, "
+          "sfig_calset_sensitivity.")
 
 
 def main():
@@ -330,8 +330,8 @@ def main():
     run_calset_sensitivity(dev_p, dev_y, test_p, test_y)
     print("=== 5. Figures ===")
     make_figures()
-    print("Done. Wrote corrected_label_noise.csv, corrected_seed_stability.csv, "
-          "corrected_meta_coverage.csv (+_draws), corrected_calset_sensitivity.csv "
+    print("Done. Wrote label_noise.csv, seed_stability.csv, "
+          "meta_coverage.csv (+_draws), calset_sensitivity.csv "
           "and 3 supplementary figures.")
 
 

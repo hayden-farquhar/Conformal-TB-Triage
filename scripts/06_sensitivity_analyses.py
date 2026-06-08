@@ -127,7 +127,8 @@ def run_seed_stability():
     print(f"\n  AUROC SD < 0.01: {'PASS' if auroc_pass else 'FAIL'} ({df['auroc'].std():.4f})")
     print(f"  Coverage SD < 0.02: {'PASS' if cov_pass else 'FAIL'} ({df['tb_cov'].std():.4f})")
 
-    df.to_csv(TABLES_DIR / "seed_stability.csv", index=False)
+    # In-sample arm; held-out seed_stability.csv is written by conformal_sensitivity.py.
+    df.to_csv(TABLES_DIR / "seed_stability_insample.csv", index=False)
     return df
 
 
@@ -185,8 +186,9 @@ def run_meta_coverage():
     if meta_cov_90 < 0.85:
         print(f"    WARNING: Meta-coverage below 0.85 — systematic validity concern")
 
+    # In-sample arm; held-out meta_coverage.csv is written by conformal_sensitivity.py.
     pd.DataFrame({"resplit": range(n_resplits), "tb_coverage": coverages}).to_csv(
-        TABLES_DIR / "meta_coverage.csv", index=False
+        TABLES_DIR / "meta_coverage_insample.csv", index=False
     )
     return coverages
 
@@ -238,7 +240,8 @@ def run_label_noise():
               f"TB_cov={np.mean(covs):.4f}±{np.std(covs):.4f}", flush=True)
 
     df = pd.DataFrame(results)
-    df.to_csv(TABLES_DIR / "label_noise.csv", index=False)
+    # In-sample arm; held-out label_noise.csv is written by conformal_sensitivity.py.
+    df.to_csv(TABLES_DIR / "label_noise_insample.csv", index=False)
 
     # Find tolerance threshold
     baseline_cov = df[df["noise_frac"] == 0.00]["tb_cov_mean"].values[0]

@@ -1,5 +1,5 @@
 """
-Corrected (held-out, in-distribution) cross-conformal CV+.
+Held-out (in-distribution) cross-conformal CV+.
 
 The original implementation pooled the Shenzhen+Montgomery `calibration` split
 (NLM; the probe-training distribution, out-of-distribution w.r.t. the TBX11K
@@ -8,7 +8,7 @@ against the in-sample split-conformal number (TB 94.1%). Both references are
 superseded by this revision.
 
 This version runs 5-fold CV+ purely over the held-out TBX11K `dev` pool
-(in-distribution with test), using the corrected probe recipe (RAW embeddings,
+(in-distribution with test), using the held-out probe recipe (RAW embeddings,
 CV-selected C), and compares against the valid held-out split-conformal headline
 (TB-class 92.5%). The result shows that CV+'s single marginal threshold
 under-covers the minority TB class and emits empty sets, the failure the
@@ -36,7 +36,7 @@ SPLIT_REF_TB = 0.925  # valid held-out split-conformal TB-class coverage (Table 
 
 
 def train_linear_probe(Xc, yc):
-    """Corrected recipe: raw embeddings, 5-fold CV-selected C."""
+    """Held-out recipe: raw embeddings, 5-fold CV-selected C."""
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
     best_c, best = None, -1.0
     for C in [1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100]:
@@ -100,11 +100,11 @@ def main():
         "n_cal_scores": n,
         "split_conformal_tb_ref": SPLIT_REF_TB,
     }
-    print("\nCorrected CV+ results (alpha=0.10):")
+    print("\nCV+ results (held-out dev, alpha=0.10):")
     for k, v in res.items():
         print(f"  {k}: {v}")
-    pd.DataFrame([res]).to_csv(TABLES_DIR / "cross_conformal_corrected.csv", index=False)
-    print("Wrote cross_conformal_corrected.csv.")
+    pd.DataFrame([res]).to_csv(TABLES_DIR / "cross_conformal.csv", index=False)
+    print("Wrote cross_conformal.csv.")
 
 
 if __name__ == "__main__":

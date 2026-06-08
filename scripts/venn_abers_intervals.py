@@ -1,9 +1,9 @@
 """
-Corrected (held-out calibration) Venn-ABERS probability intervals.
+Held-out-calibration Venn-ABERS probability intervals.
 
 The original implementation fit the Venn-ABERS isotonic calibrators on the
 probe-TRAINING split (Shenzhen+Montgomery 'calibration') -- the same in-sample
-defect this revision corrects for the conformal sets. Intervals fit on the
+defect this revision addresses for the conformal sets. Intervals fit on the
 predictor's own training data are not out-of-sample and understate uncertainty.
 
 This version fits the two isotonic calibrators on the held-out TBX11K `dev`
@@ -56,15 +56,15 @@ def main():
 
     pd.DataFrame({"patient_id": range(len(lower)), "p_lower": lower,
                   "p_upper": upper, "width": widths, "y_true": test_y}
-                 ).to_csv(TABLES_DIR / "venn_abers_corrected.csv", index=False)
+                 ).to_csv(TABLES_DIR / "venn_abers.csv", index=False)
     pd.DataFrame([{"n_cal": len(cal_y), "mean_width": round(widths.mean(), 4),
                    "median_width": round(float(np.median(widths)), 4),
                    "decisive_rule_in": round(decisive_in, 4),
                    "decisive_rule_out": round(decisive_out, 4),
                    "decisive_total": round(decisive_in + decisive_out, 4),
                    "tb_lower_pos": round(tb_lower_pos, 4)}]
-                 ).to_csv(TABLES_DIR / "venn_abers_corrected_summary.csv", index=False)
-    print("Wrote venn_abers_corrected.csv (+_summary).")
+                 ).to_csv(TABLES_DIR / "venn_abers_summary.csv", index=False)
+    print("Wrote venn_abers.csv (+_summary).")
 
 
 if __name__ == "__main__":

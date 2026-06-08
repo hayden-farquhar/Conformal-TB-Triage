@@ -1,14 +1,14 @@
 """
-Corrected conformal pipeline (held-out conformal calibration).
+Conformal pipeline with held-out conformal calibration.
 
-Fixes the in-sample-calibration defect identified in a split-provenance audit:
+Addresses the in-sample-calibration defect identified in a split-provenance audit:
 an earlier version of this pipeline trained the probes on the NLM `calibration`
 split AND computed the conformal nonconformity scores on that same split, so the
 conformal calibration scores were in-sample. That violates split-conformal
 data-independence and produced a degenerate result (TB_cov 0.941 but
 marginal_cov 0.475, 14.7% empty sets).
 
-Corrected design (split-conformal, valid):
+Held-out design (split-conformal, valid):
   - probe:            trained on NLM `calibration` (unchanged; AUROC 0.9138 on test)
   - conformal calib:  HELD-OUT TBX11K `dev` (out-of-sample for the probe;
                       in-distribution with the test set)
@@ -30,7 +30,7 @@ from sklearn.model_selection import train_test_split
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = REPO_ROOT / "outputs"
 PRED_PATH = RESULTS_DIR / "probe_predictions.parquet"
-OUT_PATH = RESULTS_DIR / "tables" / "corrected_conformal_results.csv"
+OUT_PATH = RESULTS_DIR / "tables" / "conformal_results.csv"
 
 SEED = 42
 WORKING_MODELS = ["rad_dino", "biomedclip", "torchxrayvision", "dinov2"]
@@ -208,7 +208,7 @@ def main():
     cols = ["probe", "score", "eval", "n_cal", "n_eval", "marginal_cov", "tb_cov",
             "nontb_cov", "mean_size", "empty", "disparity",
             "marg_lo95", "marg_hi95"]
-    print("CORRECTED HEADLINE (rad_dino, Mondrian, alpha=0.10, target marginal 90%):")
+    print("HELD-OUT HEADLINE (rad_dino, Mondrian, alpha=0.10, target marginal 90%):")
     print(head[cols].to_string(index=False))
 
 

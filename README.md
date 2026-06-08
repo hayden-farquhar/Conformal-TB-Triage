@@ -8,25 +8,25 @@ Hayden Farquhar MBBS MPHTM
 
 Pre-registration: [OSF doi.org/10.17605/OSF.IO/KBAMC](https://doi.org/10.17605/OSF.IO/KBAMC)
 
-> **Correction note.** A split-provenance audit of an earlier version of this
+> **Method note.** A split-provenance audit of an earlier version of this
 > pipeline found that the conformal nonconformity scores were computed on the
-> **same** split used to train the probe, violating the independence condition
+> same split used to train the probe, violating the independence condition
 > that split-conformal coverage depends on. That in-sample design certifies a
 > *degenerate* predictor (94.1% TB-class coverage but only 47.5% marginal
 > coverage with 14.7% empty sets). The analysis here computes the conformal
-> calibration on a held-out development split; all results, figures, and
-> tables in this repository reflect that corrected design. Outputs carrying a
-> `corrected_` prefix are the authoritative versions.
+> calibration on a held-out development split, and every result, figure, and
+> table in this repository reflects that held-out design.
 
-> **Corrected outputs are complete.** Every analysis has been recomputed under
-> the held-out design and is present here: discrimination, conformal coverage,
-> recalibration, the CPU sensitivity suite (label noise, seed/resplit stability,
-> meta-coverage, calibration-set size), and the four image-based GPU sensitivity
-> analyses (image-quality degradation, test-time augmentation, lung segmentation,
-> and prediction-set stability), produced via
-> `notebooks/03_gpu_sensitivity_analyses.ipynb`. Any non-`corrected_` image-
-> robustness output is retained only to document the superseded in-sample design
-> and should not be cited.
+> **Scope of the shipped outputs.** Every analysis is computed under the
+> held-out design: discrimination, conformal coverage, recalibration, the CPU
+> sensitivity suite (label noise, seed/resplit stability, meta-coverage,
+> calibration-set size), and the four image-based GPU sensitivity analyses
+> (image-quality degradation, test-time augmentation, lung segmentation, and
+> prediction-set stability), produced via
+> `notebooks/03_gpu_sensitivity_analyses.ipynb`. The in-sample design is retained
+> only as a documented contrast: the scripts and notebooks that reproduce it
+> write an `_insample` suffix (e.g. `conformal_results_insample.csv`) and should
+> not be cited as results.
 
 ## Overview
 
@@ -97,11 +97,13 @@ Raw images are not redistributed. See [`data/raw/README.md`](data/raw/README.md)
 │   ├── 10_figures_and_final.py      Main figures + drift monitoring, Venn-ABERS
 │   ├── 11_supplementary_figures.py  Supplementary figures (sFig 5, 8-15)
 │   ├── 12_diagrammatic_figures.py   Fig 1 (study design), sFig 1 (CONSORT)
-│   ├── corrected_pipeline.py        Held-out conformal calibration (authoritative)
-│   ├── corrected_sensitivity.py     Corrected CPU sensitivity analyses
-│   ├── corrected_gpu_figures.py     Corrected GPU-sensitivity figures (sFig S4, held-out)
-│   ├── corrected_venn_abers.py      Corrected Venn-ABERS intervals (held-out dev)
-│   └── corrected_cross_conformal.py Corrected CV+ cross-conformal (held-out dev)
+│   ├── conformal_pipeline.py        Held-out conformal calibration (authoritative headline)
+│   ├── conformal_sensitivity.py     Held-out CPU sensitivity (label noise, seed/resplit, meta-coverage, cal-set size)
+│   ├── gpu_sensitivity_figures.py   Held-out GPU-sensitivity figure (image-quality degradation)
+│   ├── venn_abers_intervals.py      Held-out Venn-ABERS probability intervals (held-out dev)
+│   ├── cross_conformal_cvplus.py    Held-out CV+ cross-conformal (held-out dev)
+│   ├── fig3_provenance.py           Figure 3: in-sample vs held-out calibration provenance
+│   └── recompute_headline_numbers.py Recompute headline coverage numbers from saved predictions
 │
 ├── app/                             Interactive Streamlit demo
 │   ├── app.py                       Demo application
@@ -187,27 +189,27 @@ extraction, or runs on CPU (~30 seconds per image).
 | `07_exploratory_analyses.py` | Multi-class, abstention, adaptive CP, SHAP | `multiclass_analysis.csv`, `shap_feature_importance.csv` |
 | `08_remaining_secondary.py` | LTT, LODO recalibration, commercial comparison | `ltt_results.csv`, `recalibration_lodo.csv` |
 | `09_tier3_analyses.py` | Reference baselines, DCA, computational cost, t-SNE | `reference_baselines.csv`, `decision_curves.csv` |
-| `10_figures_and_final.py` | Main figures + drift monitoring, Venn-ABERS, cross-conformal | Fig 2-7, sFig 2-4, 6-7 |
-| `11_supplementary_figures.py` | Remaining supplementary figures | sFig 5, 8-15 |
+| `10_figures_and_final.py` | Main figures + drift monitoring (in-sample Venn-ABERS / CV+ retained as `_insample`) | Fig 2, 4, 5, 7, sFig 2-3 |
+| `11_supplementary_figures.py` | Remaining supplementary figures | sFig 8-12, 14-15 |
 | `12_diagrammatic_figures.py` | Study design schematic and CONSORT flow | Fig 1, sFig 1 |
-| `corrected_pipeline.py` | Held-out conformal calibration (split-valid; authoritative headline) | `corrected_conformal_results.csv` |
-| `corrected_sensitivity.py` | Corrected CPU sensitivity (label noise, seed/resplit, meta-coverage, cal-set size, subgroups) | `corrected_*.csv` |
-| `corrected_gpu_figures.py` | Corrected GPU-sensitivity figure: image-quality degradation (sFig S4), marginal + TB-class coverage | `sfig_image_degradation_corrected.{png,pdf}` |
-| `corrected_venn_abers.py` | Corrected Venn-ABERS probability intervals (isotonic calibrators on held-out dev, not the probe-training split) | `venn_abers_corrected.csv` (+`_summary`) |
-| `corrected_cross_conformal.py` | Corrected CV+ over the in-distribution held-out dev pool (shows marginal CV+ under-covers the TB class + emits empty sets) | `cross_conformal_corrected.csv` |
+| `conformal_pipeline.py` | Held-out conformal calibration (split-valid; authoritative headline) | `conformal_results.csv` |
+| `conformal_sensitivity.py` | Held-out CPU sensitivity (label noise, seed/resplit, meta-coverage, cal-set size, subgroups) | `label_noise.csv`, `seed_stability.csv`, `meta_coverage.csv`, `calset_sensitivity.csv` |
+| `gpu_sensitivity_figures.py` | Held-out GPU-sensitivity figure: image-quality degradation, marginal + TB-class coverage | `sfig_image_degradation.{png,pdf}` |
+| `venn_abers_intervals.py` | Held-out Venn-ABERS probability intervals (isotonic calibrators on held-out dev, not the probe-training split) | `venn_abers.csv` (+`_summary`) |
+| `cross_conformal_cvplus.py` | Held-out CV+ over the in-distribution held-out dev pool (shows marginal CV+ under-covers the TB class + emits empty sets) | `cross_conformal.csv` |
+| `fig3_provenance.py` | Figure 3: in-sample vs held-out calibration provenance (recomputed live from `probe_predictions.parquet`) | `fig3_efficiency_curves.{png,pdf}` |
 
-> **Note.** `corrected_pipeline.py`, `corrected_sensitivity.py`,
-> `corrected_gpu_figures.py`, `corrected_venn_abers.py`, and
-> `corrected_cross_conformal.py` supersede the in-sample calibration in scripts
-> `03`–`06`, the legacy degradation figure in `11_supplementary_figures.py`, and
-> the in-sample Venn-ABERS / pooled CV+ in `10_figures_and_final.py` for all
-> reported results. The numbered scripts are retained to document the original
-> (superseded) design and the audit trail; do not cite their non-`corrected_`
-> outputs.
+> **Note.** `conformal_pipeline.py`, `conformal_sensitivity.py`,
+> `gpu_sensitivity_figures.py`, `venn_abers_intervals.py`, and
+> `cross_conformal_cvplus.py` own the held-out-calibrated headline and
+> sensitivity outputs under their canonical names. Where a numbered script (`03`–`06`,
+> `10`, `11`) recomputes one of these analyses under the original in-sample design,
+> its output is written with an `_insample` suffix and retained only to document
+> the superseded design and audit trail; do not cite the `_insample` outputs.
 
 See [`data_dictionary.md`](data_dictionary.md) for detailed descriptions of the output CSV files.
 
-## Key Results (corrected, held-out calibration)
+## Key Results (held-out calibration)
 
 Primary model: RAD-DINO, linear probe, Mondrian, α=0.10, TBX11K test (n=5,879),
 conformal calibration on the held-out development split (n_cal=1,260).
@@ -222,7 +224,7 @@ conformal calibration on the held-out development split (n_cal=1,260).
 | Class-coverage disparity | 1.3 pts | — |
 
 Isotonic recalibration raises marginal coverage to 94.0%. All five pre-registered
-gates pass under the corrected design.
+gates pass under the held-out design.
 
 **In-sample defect, for contrast** (probe-training split reused for calibration):
 94.1% TB-class coverage but only 47.5% marginal coverage with 14.7% empty sets —

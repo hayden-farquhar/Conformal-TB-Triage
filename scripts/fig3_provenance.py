@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 
 SCRIPTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS))
-from corrected_pipeline import mondrian_thresholds, sets_from_mondrian, eval_sets, SEED
+from conformal_pipeline import mondrian_thresholds, sets_from_mondrian, eval_sets, SEED
 from sklearn.model_selection import train_test_split
 
 PROJ = SCRIPTS.parents[1]

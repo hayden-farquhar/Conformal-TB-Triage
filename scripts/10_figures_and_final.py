@@ -120,8 +120,9 @@ def run_venn_abers():
     print(f"  Total decisive: {decisive:.1%}")
     print(f"  TB cases with p_lower > 0: {tb_lower_pos:.1%}")
 
+    # In-sample arm; held-out venn_abers.csv is written by venn_abers_intervals.py.
     pd.DataFrame({"patient_id": range(len(lower)), "p_lower": lower, "p_upper": upper,
-                   "width": widths, "y_true": y[test_m]}).to_csv(TABLES_DIR / "venn_abers.csv", index=False)
+                   "width": widths, "y_true": y[test_m]}).to_csv(TABLES_DIR / "venn_abers_insample.csv", index=False)
 
 
 def run_cross_conformal():
@@ -185,9 +186,10 @@ def run_cross_conformal():
     print(f"    Singleton: {singleton:.4f}")
     print(f"    (Compare split conformal: TB_cov=0.9410, singleton=0.8532)")
 
+    # In-sample arm; held-out cross_conformal.csv is written by cross_conformal_cvplus.py.
     pd.DataFrame([{"method": "CV+", "alpha": alpha, "auroc": round(auroc, 4),
                     "tb_cov": round(tb_cov, 4), "singleton": round(singleton, 4),
-                    "n_cal_scores": n}]).to_csv(TABLES_DIR / "cross_conformal.csv", index=False)
+                    "n_cal_scores": n}]).to_csv(TABLES_DIR / "cross_conformal_insample.csv", index=False)
 
 
 def run_drift_monitoring():
@@ -587,15 +589,14 @@ def main():
     print(f"{'=' * 70}")
 
     fig2_roc_curves()
-    fig3_efficiency_curves()
+    # Figure 3 (in-sample vs held-out provenance) is owned by fig3_provenance.py.
+    # The calset and label-noise supplementary figures are owned by
+    # conformal_sensitivity.py (held-out); meta-coverage ships as a table only.
     fig4_triage_waterfall()
     fig5_who_tpp()
     fig7_referral_cascade()
     sfig2_tsne()
     sfig3_calibration()
-    sfig4_meta_coverage()
-    sfig6_calset()
-    sfig7_label_noise()
 
     elapsed = time.time() - t0
     print(f"\n{'=' * 70}")

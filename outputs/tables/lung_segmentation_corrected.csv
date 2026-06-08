@@ -1,4 +1,0 @@
-condition,n,lungmask,auroc,marginal_cov,tb_cov,nontb_cov,mean_size,singleton,empty,disparity
-whole_image,1000,True,0.8957,0.911,0.9278,0.9092,1.294,0.706,0.0,0.0186
-lung_only,1000,True,0.7987,0.962,0.7113,0.9889,1.251,0.749,0.0,0.2776
-mediastinal_only,1000,True,0.5541,0.936,0.3608,0.9978,1.332,0.668,0.0,0.637

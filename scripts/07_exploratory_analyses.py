@@ -455,7 +455,7 @@ def run_lodo():
         if train_m.sum() < 50: continue
 
         train_idx = np.where(train_m)[0]
-        # Held-out calibration (mirrors corrected main pipeline): probe on 70%,
+        # Held-out calibration (mirrors held-out main pipeline): probe on 70%,
         # then split the 30% remainder into a disjoint isotonic-recalibration
         # half and a disjoint conformal-calibration half. Conformal scores must
         # be independent of the fitted probe AND of the recalibrator.

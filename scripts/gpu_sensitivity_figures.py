@@ -1,14 +1,14 @@
 """
-Corrected (held-out calibration) figures for the GPU-derived sensitivity
+Held-out-calibration figures for the GPU-derived sensitivity
 analyses (image degradation = S4, TTA, lung-segmentation, perturbation).
 
 These analyses are recomputed in a Colab GPU session (perturbed images are
 re-embedded through the frozen backbone); the resulting CSVs land in
-results/tables/*_corrected.csv. This module only renders them, so the
-supplement is internally consistent with the corrected held-out pipeline.
+the held-out-calibration tables in results/tables/. This module only renders them, so the
+supplement is internally consistent with the held-out pipeline.
 
 The original S4 generator (supplementary_figures.sfig5_image_degradation)
-plotted AUROC and TB-class coverage ONLY. Under the corrected design that
+plotted AUROC and TB-class coverage ONLY. Under the held-out design that
 readout is misleading: TB-class coverage can stay high (or even climb) while
 MARGINAL coverage and the empty/singleton structure collapse. This generator
 therefore plots marginal coverage alongside TB-class coverage so the
@@ -44,7 +44,7 @@ FAMILY_ORDER = ["none", "resolution", "jpeg", "noise", "brightness"]
 
 
 def make_degradation_figure():
-    df = pd.read_csv(TABLES_DIR / "image_degradation_corrected.csv")
+    df = pd.read_csv(TABLES_DIR / "image_degradation.csv")
     df = df.assign(family=pd.Categorical(df.degradation, categories=FAMILY_ORDER,
                                          ordered=True))
     df = df.sort_values(["family"]).reset_index(drop=True)
@@ -101,12 +101,12 @@ def make_degradation_figure():
             ax.axvline(b, color="0.85", lw=0.8, zorder=0)
 
     fig.suptitle("Supplementary Figure S4. Image-quality degradation "
-                 "(corrected, held-out calibration)", fontsize=11)
+                 "(held-out calibration)", fontsize=11)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
-    fig.savefig(FIGS / "sfig_image_degradation_corrected.pdf")
-    fig.savefig(FIGS / "sfig_image_degradation_corrected.png", dpi=200)
+    fig.savefig(FIGS / "sfig_image_degradation.pdf")
+    fig.savefig(FIGS / "sfig_image_degradation.png", dpi=200)
     plt.close(fig)
-    print("Figure written: sfig_image_degradation_corrected.{png,pdf}")
+    print("Figure written: sfig_image_degradation.{png,pdf}")
 
 
 def main():

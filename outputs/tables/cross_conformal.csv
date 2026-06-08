@@ -1,2 +1,2 @@
-method,alpha,auroc,tb_cov,singleton,n_cal_scores
-CV+,0.1,0.9883,0.6673,0.9491,3320
+method,alpha,auroc,marginal_cov,tb_cov,nontb_cov,singleton,empty,mean_size,n_cal_scores,split_conformal_tb_ref
+"CV+ (held-out dev, in-distribution)",0.1,0.993,0.892,0.4937,0.9338,0.8949,0.1051,0.8949,2520,0.925

@@ -588,7 +588,9 @@ def run_calset_sensitivity():
               f"singleton={np.mean(singletons):.4f} ± {np.std(singletons):.4f}", flush=True)
 
     calset_df = pd.DataFrame(results)
-    calset_df.to_csv(TABLES_DIR / "calset_sensitivity.csv", index=False)
+    # In-sample arm (subsamples the probe-training split). The authoritative
+    # held-out calset_sensitivity.csv is written by conformal_sensitivity.py.
+    calset_df.to_csv(TABLES_DIR / "calset_sensitivity_insample.csv", index=False)
 
     # Find minimum n for stable coverage
     stable = calset_df[calset_df["tb_cov_std"] < 0.02]
