@@ -123,7 +123,7 @@ def sfig1_consort():
     y = 12.5
     draw_box(ax, 6, y, 7, 0.7,
              "Exclusion criteria applied\nLateral views, paediatric (<15 y), unreadable files, "
-             "resolution <200×200, duplicates",
+             "matrix dimensions <200×200, duplicates",
              *C_EXCL, fontsize=8)
 
     draw_arrow(ax, 6, 13.4, 6, 12.9)
