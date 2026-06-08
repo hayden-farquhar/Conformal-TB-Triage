@@ -1,6 +1,6 @@
 """
-Round-2 recompute: emit the REAL numbers needed to reconcile the manuscript and
-supplement after the held-out conformal-calibration correction.
+Reconciliation recompute: emit the REAL numbers needed to reconcile the manuscript
+and supplement after the held-out conformal-calibration correction.
 
 Reuses the exact conformal maths from corrected_pipeline.py (no re-implementation).
 Everything here runs from saved out-of-sample probe predictions -- no GPU /
